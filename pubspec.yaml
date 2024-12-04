@@ -32,6 +32,11 @@ dependencies:
     sdk: flutter
   camera: ^0.11.0
   permission_handler: ^10.2.0
+  socket_io_client: ^2.0.0
+  image: ^3.0.1
+  path_provider: ^2.0.10
+  audioplayers: ^6.1.0
+  flutter_sms: ^2.3.0
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -64,6 +69,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/car.png
+    - assets/alarm.wav
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

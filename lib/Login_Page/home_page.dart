@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // สำหรับ Firestore
 import 'camera_page.dart';
 import 'setting_page.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,6 +23,7 @@ class _HomePageState extends State<HomePage> {
       _showMyDialog(context); // แสดง Popup เมื่อ widget ถูกสร้างเสร็จ
     });
     _fetchPhoneNumber(); // ดึงข้อมูลเบอร์โทรจาก Firestore
+    requestSmsPermission();
   }
 
   Future<void> _fetchPhoneNumber() async {
@@ -191,5 +193,19 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Future<void> requestSmsPermission() async {
+    PermissionStatus status = await Permission.sms.request();
+
+    if (status.isGranted) {
+      print("SMS permission granted");
+    } else if (status.isDenied) {
+      print("SMS permission denied");
+    } else if (status.isPermanentlyDenied) {
+      print("SMS permission permanently denied. Please enable it in settings.");
+      // สามารถเปิดไปที่การตั้งค่าได้
+      openAppSettings();
+    }
   }
 }
