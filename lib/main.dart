@@ -86,7 +86,7 @@ class RoleBasedRedirect extends StatelessWidget {
             return const HomePage();
           }
         }
-        return const AuthPage();
+        return const HomePage();
       },
     );
   }

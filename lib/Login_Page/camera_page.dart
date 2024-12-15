@@ -24,6 +24,7 @@ class _CameraPageState extends State<CameraPage> {
   late IO.Socket _socket; // WebSocket สำหรับเชื่อมต่อเซิร์ฟเวอร์
   String _serverResponse = ''; // ข้อความจากเซิร์ฟเวอร์
   bool isStreaming = true; // ตัวแปรสถานะการส่งข้อมูล
+  bool isProcessing = false;
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _CameraPageState extends State<CameraPage> {
     // ฟังข้อความจากเซิร์ฟเวอร์
     _socket.on('result', (data) {
       setState(() {
+        isProcessing = false;
         _serverResponse = data.toString(); // เก็บข้อความที่ได้รับ
       });
       // ตรวจสอบค่า score
@@ -171,6 +173,7 @@ class _CameraPageState extends State<CameraPage> {
 
   void _sendFrameToServer(CameraImage image) async {
     if (!isStreaming) return; // หยุดส่งข้อมูลหากสถานะเป็น false
+    if (isProcessing) return; // หยุดส่งข้อมูลหากสถานะเป็น true
     try {
       // แปลง CameraImage (YUV420) เป็น RGB หรือ JPEG
       final bytes = _convertYUV420ToImage(image);
@@ -182,6 +185,7 @@ class _CameraPageState extends State<CameraPage> {
         // ส่งข้อมูลผ่าน Socket.IO
         _socket.emit('send_image', {'image': base64Image});
         print("Image sent to server");
+        isProcessing = true;
       } else {
         print("Failed to convert image");
       }
