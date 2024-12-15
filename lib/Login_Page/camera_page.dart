@@ -9,7 +9,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:image/image.dart' as img; // ใช้ package image สำหรับการบีบอัดภาพ
 import 'package:audioplayers/audioplayers.dart'; // เพิ่ม import
-import 'package:flutter_sms/flutter_sms.dart';
 
 class CameraPage extends StatefulWidget {
   @override
@@ -38,7 +37,7 @@ class _CameraPageState extends State<CameraPage> {
     if (await Permission.camera.request().isGranted) {
       final cameras = await availableCameras();
       final frontCamera = cameras.firstWhere(
-        (camera) => camera.lensDirection == CameraLensDirection.front,
+        (camera) => camera.lensDirection == CameraLensDirection.back,
       );
 
       _controller = CameraController(
@@ -58,7 +57,7 @@ class _CameraPageState extends State<CameraPage> {
 
   void _connectToServer() {
     // ตั้งค่า WebSocket เพื่อเชื่อมต่อ Python Server
-    _socket = IO.io('http://192.168.1.39:5000', IO.OptionBuilder()
+    _socket = IO.io('http://192.168.1.36:5000', IO.OptionBuilder()
         .setTransports(['websocket'])
         .build());
 
@@ -79,7 +78,7 @@ class _CameraPageState extends State<CameraPage> {
         _showSleepyWarning(); // แสดง Popup แจ้งเตือน
       }
       else if (data['score'] == 15) {
-        _sendSMS("คุณกำลังง่วง โปรดหยุดพักก่อนเดินทางต่อ!", ['phone_number']); // ส่ง SMS แจ้งเตือน
+        // _sendSMS("คุณกำลังง่วง โปรดหยุดพักก่อนเดินทางต่อ!", ['phone_number']); // ส่ง SMS แจ้งเตือน
       }
 
     });
@@ -300,13 +299,5 @@ class _CameraPageState extends State<CameraPage> {
         ],
       ),
     );
-  }
-
-  void _sendSMS(String message, List<String> recipents) async {
-    String _result = await sendSMS(message: message, recipients: recipents)
-        .catchError((onError) {
-      print(onError);
-    });
-    print(_result);
   }
 }
