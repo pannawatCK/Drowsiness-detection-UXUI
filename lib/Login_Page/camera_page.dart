@@ -73,13 +73,13 @@ class _CameraPageState extends State<CameraPage> {
         _serverResponse = data.toString(); // เก็บข้อความที่ได้รับ
       });
       // ตรวจสอบค่า score
-      if (data['score'] == 1) {
+      if (data['score'] >= 15) {
+        playSound(); // เล่นเสียงแจ้งเตือน
+      }
+      if (data['score'] >= 30) {
         _showSleepyWarning(); // แสดง Popup แจ้งเตือน
       }
-      else if (data['score'] == 2) {
-        _showSleepyWarning(); // แสดง Popup แจ้งเตือน
-      }
-      else if (data['score'] == 15) {
+      if (data['score'] >= 300) {
         // _sendSMS("คุณกำลังง่วง โปรดหยุดพักก่อนเดินทางต่อ!", ['phone_number']); // ส่ง SMS แจ้งเตือน
       }
 
@@ -87,14 +87,22 @@ class _CameraPageState extends State<CameraPage> {
     _socket.onDisconnect((_) => print('เซิร์ฟเวอร์ตัดการเชื่อมต่อ'));
   }
 
-  // ฟังก์ชันสำหรับแสดง Popup และเล่นเสียง
-  void _showSleepyWarning() {
-    // หยุดส่งภาพไปยังเซิร์ฟเวอร์
-    // _controller?.stopImageStream();
-
+  void playSound() {
     // เล่นเสียงแจ้งเตือน
     final player = AudioPlayer();
     player.play(AssetSource('alarm.wav')); // เตรียมไฟล์เสียงในโฟลเดอร์ assets/sounds/
+  }
+
+  void stopSound() {
+    // เล่นเสียงแจ้งเตือน
+    final player = AudioPlayer();
+    player.stop(); // หยุดเสียง
+  }
+
+  // ฟังก์ชันสำหรับแสดง Popup และเล่นเสียง
+  void _showSleepyWarning() {
+    // หยุดส่งภาพไปยังเซิร์ฟเวอร์
+    isStreaming = false;
 
     // แสดง Popup
     showDialog(
@@ -108,7 +116,7 @@ class _CameraPageState extends State<CameraPage> {
               child: Text('ตกลง'),
               onPressed: () {
                 Navigator.of(context).pop(); // ปิด Popup
-                player.stop(); // หยุดเสียง
+                stopSound();
                 setState(() {
                   isStreaming = true; // กลับมาเริ่มส่งข้อมูลอีกครั้ง
                 });
